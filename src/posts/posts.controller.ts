@@ -38,7 +38,7 @@ export class PostsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.postsService.findOneAndIncreaseViewCount(id);
+    return this.postsService.findOneWithComments(id);
   }
 
   @Patch(':id')

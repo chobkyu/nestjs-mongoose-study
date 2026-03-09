@@ -4,11 +4,13 @@ import { Model } from 'mongoose';
 import { Post, PostDocument } from './schemas/post.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { CommentsService } from '../comments/comments.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
+    private readonly commentsService: CommentsService,
   ) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
@@ -28,14 +30,15 @@ export class PostsService {
     return post;
   }
 
-  async findOneAndIncreaseViewCount(id: string): Promise<Post> {
+  async findOneWithComments(id: string) {
     const post = await this.postModel
       .findByIdAndUpdate(id, { $inc: { viewCount: 1 } }, { new: true })
       .exec();
     if (!post) {
       throw new NotFoundException(`Post with id ${id} not found`);
     }
-    return post;
+    const comments = await this.commentsService.findByPost(id);
+    return { ...post.toObject(), comments };
   }
 
   async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
@@ -53,6 +56,7 @@ export class PostsService {
     if (!post) {
       throw new NotFoundException(`Post with id ${id} not found`);
     }
+    await this.commentsService.removeByPost(id);
     return post;
   }
 
