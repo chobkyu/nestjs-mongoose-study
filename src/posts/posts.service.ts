@@ -5,6 +5,7 @@ import { Post, PostDocument } from './schemas/post.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CommentsService } from '../comments/comments.service';
+import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +21,38 @@ export class PostsService {
 
   async findAll(): Promise<Post[]> {
     return this.postModel.find().sort({ createdAt: -1 }).exec();
+  }
+
+  async findAllPaginated(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedResponse<Post>> {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.postModel
+        .find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec(),
+      this.postModel.countDocuments().exec(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: data as Post[],
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    };
   }
 
   async findOne(id: string): Promise<Post> {
