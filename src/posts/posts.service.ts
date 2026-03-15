@@ -98,10 +98,14 @@ export class PostsService {
   }
 
   async search(keyword: string): Promise<Post[]> {
-    const regex = new RegExp(keyword, 'i');
+    // text index 사용 (title, content 필드)
     return this.postModel
-      .find({ $or: [{ title: regex }, { content: regex }] })
-      .sort({ createdAt: -1 })
+      .find(
+        { $text: { $search: keyword } },
+        { score: { $meta: 'textScore' } },
+      )
+      .sort({ score: { $meta: 'textScore' }, createdAt: -1 })
+      .lean()
       .exec();
   }
 }

@@ -47,9 +47,9 @@ PostSchema.index({ author: 1, createdAt: -1 });
 ```
 
 **체크리스트:**
-- [ ] Post 스키마에 `createdAt` 인덱스 (목록 정렬용)
-- [ ] Post에 title, content text index (검색 개선)
-- [ ] Comment에 `post` 인덱스 (post별 댓글 조회용)
+- [x] Post 스키마에 `createdAt` 인덱스 (목록 정렬용)
+- [x] Post에 title, content text index (검색 개선)
+- [x] Comment에 `post` 인덱스 (post별 댓글 조회용)
 - [ ] (선택) `db.collection.getIndexes()` 로 생성된 인덱스 확인
 
 ---
@@ -195,7 +195,7 @@ this.postModel.find().sort({ createdAt: -1 }).lean().exec()
 | # | 항목            | 난이도 | 완료 |
 |---|-----------------|--------|------|
 | 1 | 페이지네이션    | ⭐     | ☑    |
-| 2 | 인덱스          | ⭐⭐   | ☐    |
+| 2 | 인덱스          | ⭐⭐   | ☑    |
 | 3 | Aggregation     | ⭐⭐⭐  | ☐    |
 | 4 | populate()      | ⭐     | ☐    |
 | 5 | Soft Delete     | ⭐     | ☐    |

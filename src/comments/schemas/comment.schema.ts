@@ -17,3 +17,6 @@ export class Comment {
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
+
+// post별 댓글 조회용
+CommentSchema.index({ post: 1 });
